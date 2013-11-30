@@ -9,19 +9,32 @@ email = require('./mail3.js');
 var server = net.createServer(function(conn){ 
 
  //address = net.address();
+ //Exibe dados do cliente, como endereço e porta utilizada
  console.log("Stream on %j", conn.address());
  //console.log("opened server on %j", address);
  
  
   // Adiciona no array uma conexão de um usuário.
-  connections.push(conn);   
-  // Evento que remove o usuário do array quando ele é desconectado.  
+  connections.push(conn);  
+  
+  
+  /*
+	O Nodejs trabalha com eventos do lado do servidor, que são diferente de eventos do lado cliente(mouse clicked, mouse over, keypress)
+	Um evento do lado do servidor por ser alteração no status de uma conexão, ou recebimento de dados por exemplo.
+  */
+  // Evento que remove o usuário do array quando ele é desconectado.
   conn.on('close', function(){ 
-    var pos = connections.indexOf(conn);
-    if(pos >= 0){
-      connections.splice(pos, 1);
+  
+	//Captura a posição do array em que a conexão fechada está
+    var pos = connections.indexOf(conn);		
+	
+	//Se houver mais de uma conexão
+    if(connections.length > 0){	
+		//Então essa conexão será fechada, removendo "1" conexão do array	
+		connections.splice(pos, 1);
 	  
-	  if(pos == 0){				
+	  //Se após fechar a conexão, não houverem mais conexões
+	  if(connections.length == 0){				
 		//Faz o select no banco buscando as mensagens
 		sqliteS.select();				
 		
@@ -34,7 +47,7 @@ var server = net.createServer(function(conn){
   });
 
   //Imprime no cliente a mensagem de início no mini-chat.  
-  conn.write('Node ChatName: ');
+  conn.write('Node ChatName(email): ');
   // Variável para identificar o nome do usuário conectado.  
   var username;
 
